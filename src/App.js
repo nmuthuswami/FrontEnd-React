@@ -9,24 +9,9 @@ import {BrowserRouter as Router,
 
 function App() {
   return (
-    <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
-      <Router>
+      <Router>      
           <div className="App">
-            <Header/>
+            <Header/> 
             <div className="container d-flex align-items-center flex-column">
                 <Switch>
                     <Route path="/" exact={true}>
@@ -35,7 +20,7 @@ function App() {
                     <Route path="/Login">
                       <LoginForm />
                     </Route>
-                    <Route path="/Home">
+                    <Route path="/Home">                      
                       <HomeForm />
                     </Route>
                 </Switch>
@@ -43,7 +28,6 @@ function App() {
           </div>
       </Router>
       
-    </div>
   );
 }
 

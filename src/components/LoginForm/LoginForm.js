@@ -1,95 +1,116 @@
-import React,{useState} from "react";
+import React from "react";
 import axios from "axios";
 import { withRouter } from "react-router-dom";
-import {API_BASE_URL,ACCESS_TOKEN_NAME} from '../../constants/apiConstants';
+import {ACCESS_TOKEN_NAME,ACCESS_USER_NAME} from '../../constants/apiConstants';
 
-function LoginForm(props){
-    const[state, setState] = useState({
-        username:"",
-        password:"",
-        successMessage: null
-    })
+class LoginForm extends React.Component{
 
-    const handleChange = (e) =>{
+    constructor(props){
+        super(props);
+
+        this.state={
+            username:"",
+            password:"",
+            successMessage: null,
+            failureMessage:null
+        }
+    }
+
+    handleChange = (e) =>{
         const{id, value} = e.target
-        setState(prevState => ({
+        this.setState(prevState => ({
             ...prevState,
             [id]: value
         }))
-    }
+    };
 
-    const handleSubmitClick = (e) =>{
+    handleSubmitClick = (e) =>{
         e.preventDefault();
         const payload={
-            "username": state.username,
-            "password": state.password
+            "username": this.state.username,
+            "password": this.state.password
         }
         
         axios.post('http://localhost:3001/users/authenticate',payload)
-             .then(function(response){
+             .then((response)=>{
                  if(response.status === 200){
-                     setState(prevState =>({
-                         ...prevState,
-                         'successMessage': 'Login successful'
-                     }))
+                     this.setState({
+                         'successMessage': 'Login successful',
+                         'failureMessage': null
+                     })
                      localStorage.setItem(ACCESS_TOKEN_NAME,response.data.token);
-                     redirectToHomeForm();
-                     props.showError(null);
+                     localStorage.setItem(ACCESS_USER_NAME,response.data.firstName + " " + response.data.lastName);
+                     this.redirectToHomeForm();
                  }
                  else if(response.code === 204){
-                     props.showError("Username and password do not match");
+                    this.setState({
+                        'successMessage': null,
+                        'failureMessage': 'Username and password do not match'
+                    });
                  }
                  else{
-                     props.showError("Username does not exist");
+                    this.setState({
+                        'successMessage': null,
+                        'failureMessage': 'Username does not exist'
+                    });
                  }
              })
-             .catch(function(error){
+             .catch((error) => {
                  console.log(error);
+                 this.setState({
+                    'successMessage': null,
+                    'failureMessage': 'Incorrect username or password'
+                });             
              });
-    }
+    };
 
-    const redirectToHomeForm = () =>{
-        // props.updateTitle('Home');
-        props.history.push('/home');
-    }
+    redirectToHomeForm = () =>{
+        this.props.history.push('/home');
+    };
 
-    return(
-        <div className="card col-12 col-lg-4 login-card mt-2 hv-center">
-            <form>
-                <div className="form-group text-left">
-                    <label htmlFor="exampleInputusername">User Name</label>
-                    <input type="text"
-                           className="form-control"
-                           id="username"
-                           aria-describedby="usernamehelp"
-                           placeholder="Enter Username"
-                           value={state.username}
-                           onChange={handleChange}
-                    />                    
+    render(){
+        return(
+            <div className="card col-12 col-lg-4 login-card mt-2 hv-center">
+                <form>
+                    <div className="form-group text-left">
+                        <label htmlFor="exampleInputusername">User Name</label>
+                        <input type="text"
+                               className="form-control"
+                               id="username"
+                               aria-describedby="usernamehelp"
+                               placeholder="Enter Username"
+                               value={this.state.username}
+                               onChange={this.handleChange}
+                        />                    
+                    </div>
+                    <div className="form-group text-left">
+                        <label htmlFor="exampleInputPassword1">Password</label>
+                        <input type="password"
+                               className="form-control"
+                               id="password"                           
+                               placeholder="Password"
+                               value={this.state.password}
+                               onChange={this.handleChange}
+                        />                    
+                    </div>
+                    <div className="form-check">                    
+                    </div>
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        onClick={this.handleSubmitClick}
+                    >Submit</button>
+                </form>
+                <div className="alert alert-success mt-2" style={{display: this.state.successMessage ? 'block' : 'none' }} role="alert">
+                    {this.state.successMessage}
                 </div>
-                <div className="form-group text-left">
-                    <label htmlFor="exampleInputPassword1">Password</label>
-                    <input type="password"
-                           className="form-control"
-                           id="password"                           
-                           placeholder="Password"
-                           value={state.password}
-                           onChange={handleChange}
-                    />                    
+                <div className="alert alert-danger mt-2" style={{display: this.state.failureMessage ? 'block' : 'none' }} role="alert">
+                    {this.state.failureMessage}
                 </div>
-                <div className="form-check">                    
-                </div>
-                <button
-                    type="submit"
-                    className="btn btn-primary"
-                    onClick={handleSubmitClick}
-                >Submit</button>
-            </form>
-            <div className="alert alert-success mt-2" style={{display: state.successMessage ? 'block' : 'none' }} role="alert">
-                {state.successMessage}
             </div>
-        </div>
-    )
-}
+        )
+    }
+
+}    
 
 export default withRouter(LoginForm);

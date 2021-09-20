@@ -1,13 +1,22 @@
 import React from 'react';
+import Logout from "../Logout/LogoutForm";
 
-function Header(){
-    return(
-        <nav class="navbar navbar-dark bg-primary">
-            <div className="row col-12 d-flex justify-content-center text-white">
-                <span className="h3">Movie Application</span>
+class Header extends React.Component{    
+    render(){
+        return(
+            <div className="container bg-primary">
+                <div className="row">                
+                    <div className="col-7 text-right">
+                        <span className="h3 text-white">Movie Application</span>  
+                    </div>       
+                    <div className="col-2"></div>        
+                    <div className="col-3 text-right">
+                        <Logout />
+                    </div>                                  
+                </div>     
             </div>
-        </nav>
-    )
+        )
+    }
 }
 
 export default Header;
